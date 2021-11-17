@@ -1,0 +1,150 @@
+const express = require('express');
+const passport = require('passport');
+const session = require('express-session');
+const process = require('process');
+const LocalStrategy = require('passport-local').Strategy;
+const bodyParser = require('body-parser');
+const tracker = require('delivery-tracker');
+const MongoStore = require('connect-mongo');
+
+const functions = require('./functions');
+const User = require('./models/user');
+const Package = require('./models/package');
+const PackageQueue = require('./models/package_queue')
+
+const app = express();
+app.set('view engine', 'ejs');
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json())
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+        mongoUrl: process.env.MONGO_STRING
+    })
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+app.use(express.static('static'));
+
+app.get('/', functions.ensureLogin, (req, res) => {
+    Package.find({}, null, { sort: { last_update: -1 } }, function(err, docs) {
+        if (err) throw err;
+        res.render('home', {
+            packages: docs,
+            tracker: tracker
+        });
+    });
+});
+
+app.get('/scanner', functions.ensureLogin, (req, res) => {
+    res.render('scanner', {
+        tracker: tracker
+    });
+});
+
+app.get('/login', (req, res) => {
+    res.render('login');
+});
+app.post("/login", passport.authenticate("local", {
+    successRedirect: "/",
+    failureRedirect: "/login#fail"
+}), function(req, res) {});
+
+app.get('/register', (req, res) => {
+    res.render('register', {
+        registration: parseInt(process.env.REGISTRATION)
+    });
+});
+app.post('/register', (req, res) => {
+    if (parseInt(process.env.REGISTRATION) == 1) {
+        User.register(new User({ username: req.body.username }), req.body.password, (err, user) => {
+            if (err) {
+                console.error(err);
+                res.redirect('/register');
+            } else {
+                passport.authenticate('local')(req, res, () => {
+                    res.redirect('/');
+                });
+            }
+        });
+    } else {
+        res.redirect('/register');
+    }
+});
+app.get('/logout', (req, res, next) => {
+    if (req.session) {
+        req.logout();
+        req.session.destroy((err) => {
+            if (err) {
+                console.error(err);
+            } else {
+                res.clearCookie('session-id');
+                res.redirect('/login');
+            }
+        });
+    } else {
+        var err = new Error('You are not logged in!');
+        err.status = 403;
+        next(err);
+    }
+});
+
+app.get('/delete_shipment', functions.ensureLogin, (req, res) => {
+    Package.findOneAndDelete({ courier: req.query.courier, tracking_id: req.query.tracking_id }, function(err, doc) {
+        if (err) console.error(err);
+        PackageQueue.findOneAndDelete({ courier: req.query.courier, tracking_id: req.query.tracking_id }, function(err, doc) {
+            if (err) console.error(err);
+            res.redirect('/');
+        });
+    });
+});
+
+app.post('/add_shipment', functions.ensureLogin, (req, res) => {
+    functions.addAndTrack(req.body.courier, req.body.tracking_id, function(msg) {
+        res.send(JSON.stringify({ msg: msg }));
+    });
+});
+
+app.post('/add_bulk_shipment', functions.ensureLogin, (req, res) => {
+    req.body.tracking_ids.split(/\r?\n/).forEach(tracking_id => {
+        functions.addPackageToQueue(req.body.courier, tracking_id);
+    });
+    res.redirect('/');
+});
+
+functions.connectDB(function() {
+    app.listen(3000, () => {
+        console.log(`DelTrack is listening at http://localhost:3000`);
+    });
+
+    setInterval(function() {
+        PackageQueue.findOneAndDelete({}, function(err, doc) {
+            if (err) console.error(err);
+            if (doc !== null) {
+                console.log('Found package in queue: ' + doc.courier + " " + doc.tracking_id);
+                Package.countDocuments({ tracking_id: doc.tracking_id, courier: doc.courier }, (err, count) => {
+                    if (err) console.error(err);
+                    if (count == 0) {
+                        functions.addAndTrack(doc.courier, doc.tracking_id, function() {
+                            console.log('Added and tracked new package: ' + doc.courier + ' ' + doc.tracking_id);
+                        });
+                    } else {
+                        functions.trackAndUpdate(doc.courier, doc.tracking_id);
+                    }
+                });
+
+            }
+        });
+    }, 10 * 1000); // 10 seconds
+    setInterval(function() {
+        functions.checkForUpdates();
+    }, 30 * 60 * 1000); // 30 seconds
+});

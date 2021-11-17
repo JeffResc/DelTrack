@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Home - DelTrack</title>
+
+    <!-- Tailwind is included -->
+    <link rel="stylesheet" href="css/main.css?v=1628755089081">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
+    <link rel="mask-icon" href="safari-pinned-tab.svg" color="#00b4b6" />
+
+    <meta name="description" content="Home - DelTrack">
+
+</head>
+
+<body>
+
+    <div id="app">
+
+        <nav id="navbar-main" class="navbar is-fixed-top">
+            <div class="navbar-brand">
+                <a class="navbar-item mobile-aside-button">
+                    <span class="icon"><i class="mdi mdi-forwardburger mdi-24px"></i></span>
+                </a>
+            </div>
+            <div class="navbar-brand is-right">
+                <a class="navbar-item --jb-navbar-menu-toggle" data-target="navbar-menu">
+                    <span class="icon"><i class="mdi mdi-dots-vertical mdi-24px"></i></span>
+                </a>
+            </div>
+            <div class="navbar-menu" id="navbar-menu">
+                <div class="navbar-end">
+                    <a title="Log out" class="navbar-item desktop-icon-only" href="/logout">
+                        <span class="icon"><i class="mdi mdi-logout"></i></span>
+                        <span>Log out</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <aside class="aside is-placed-left is-expanded">
+            <div class="aside-tools">
+                <div>
+                    Del<b class="font-black">Track</b>
+                </div>
+            </div>
+            <div class="menu is-menu-main">
+                <p class="menu-label">General</p>
+                <ul class="menu-list">
+                    <li class="active">
+                        <a href="/">
+                            <span class="icon"><i class="mdi mdi-home"></i></span>
+                            <span class="menu-item-label">Track</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/scanner">
+                            <span class="icon"><i class="mdi mdi-barcode"></i></span>
+                            <span class="menu-item-label">Scanner</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+
+        <section class="is-title-bar">
+            <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
+                <ul>
+                    <li>General</li>
+                    <li>Track</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="section main-section">
+            <div class="card has-table">
+                <header class="card-header">
+                    <p class="card-header-title">
+                        <span class="icon"><i class="mdi mdi-truck"></i></span> Shipments
+                    </p>
+                    <p class="card-header-icon">
+                        <label for="sort">Filter by Status:</label>
+                        <select name="filer" onchange="filterTable()" id="tableFilter">
+                            <option value="none">No Filter</option>
+                            <option value="Label Created, not yet in system">Label Created, not yet in system</option>
+                            <option value="InfoReceived">Info Recieved</option>
+                            <option value="Pending">Pending</option>
+                            <option value="InTransit">In Transit</option>
+                            <option value="Delivered">Delivered</option>
+                            <option value="Returned">Returned</option>
+                            <option value="Exception">Exception</option>
+                            <option value="FailAttempt">Failed Delivery Attempt</option>
+                        </select>
+                    </p>
+                    <a href="#" class="card-header-icon --jb-modal" data-target="add-shipment-modal">
+                        <span class="icon"><i class="mdi mdi-plus"></i></span>
+                    </a>
+                    <a href="#" class="card-header-icon --jb-modal" data-target="add-bulk-shipment-modal">
+                        <span class="icon"><i class="mdi mdi-table-plus"></i></span>
+                    </a>
+                    <a href="#" class="card-header-icon">
+                        <span class="icon"><i class="mdi mdi-delete"></i></span>
+                    </a>
+                </header>
+                <div class="card-content">
+                    <table id="pkgTable">
+                        <thead>
+                            <tr>
+                                <th class="checkbox-cell">
+                                    <label class="checkbox">
+                                        <input type="checkbox">
+                                        <span class="check"></span>
+                                    </label>
+                                </th>
+                                <th class="image-cell"></th>
+                                <th>Carrier</th>
+                                <th>Last Checkpoint</th>
+                                <th>Location</th>
+                                <th>Destination</th>
+                                <th>Last Check</th>
+                                <th>Last Update</th>
+                                <th>Created At</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% for (var i = 0; i < packages.length; i++) { %>
+                                <tr>
+                                    <td class="checkbox-cell">
+                                        <label class="checkbox">
+                                    <input type="checkbox">
+                                    <span class="check"></span>
+                                </label>
+                                    </td>
+                                    <td class="image-cell">
+                                        <% if (packages[i].status == 'Delivered') { %>
+                                            <span title="Delivered" data-type="<%= packages[i].status %>" style="height: 10px; width: 10px; background-color: #218748; border-radius: 50%; display: inline-block;"></span>
+                                            <% } else if (packages[i].status == 'InTransit') { %>
+                                                <span title="In Transit" data-type="<%= packages[i].status %>" style="height: 10px; width: 10px; background-color: #336; border-radius: 50%; display: inline-block;"></span>
+                                                <% } else if (packages[i].status == 'InfoReceived') { %>
+                                                    <span title="Info Recieved" data-type="<%= packages[i].status %>" style="height: 10px; width: 10px; background-color: #f39c12; border-radius: 50%; display: inline-block;"></span>
+                                                    <% } else { %>
+                                                        <span title="<%= packages[i].status %>" data-type="<%= packages[i].status %>" style="height: 10px; width: 10px; background-color: #e71921; border-radius: 50%; display: inline-block;"></span>
+                                                        <% } %>
+                                    </td>
+                                    <td data-label="Carrier">
+                                        <%= tracker.courier(packages[i].courier).NAME %>
+                                    </td>
+                                    <td data-label="Last Checkpoint">
+                                        <% if (typeof packages[i].checkpoints[0] !== 'undefined' && packages[i].checkpoints[0] && typeof packages[i].checkpoints[0].message !== 'undefined' && packages[i].checkpoints[0].message) { %>
+                                            <%= packages[i].checkpoints[0].message %>
+                                                <% } else { %>
+                                                    <%= packages[i].status %>
+                                                        <% } %>
+
+                                    </td>
+                                    <td data-label="Location">
+                                        <% if (typeof packages[i].checkpoints[0] !== 'undefined' && packages[i].checkpoints[0] && typeof packages[i].checkpoints[0].location !== 'undefined' && packages[i].checkpoints[0].location) { %>
+                                            <%= packages[i].checkpoints[0].location %>
+                                                <% } else { %>
+                                                    Unknown
+                                                    <% } %>
+                                    </td>
+                                    <td data-label="Destination">
+                                        <%= packages[i].destination %>
+                                    </td>
+                                    <td data-label="Last Check">
+                                        <small class="text-gray-500" title="<%= packages[i].last_check %>"><%= packages[i].last_check.toDateString() %></small>
+                                    </td>
+                                    <td data-label="Last Update">
+                                        <small class="text-gray-500" title="<%= packages[i].last_update %>"><%= packages[i].last_update.toDateString() %></small>
+                                    </td>
+                                    <td data-label="Created At">
+                                        <small class="text-gray-500" title="<%= packages[i].created_at %>"><%= packages[i].created_at.toDateString() %></small>
+                                    </td>
+                                    <td class="actions-cell">
+                                        <div class="buttons right nowrap">
+                                            <button class="button small green --jb-modal" data-target="tracking-modal-<%= packages[i].courier %>-<%= packages[i].tracking_id %>" type="button">
+                                        <span class="icon"><i class="mdi mdi-eye"></i></span>
+                                    </button>
+                                            <button class="button small red" type="button" onclick="var r = confirm('Are you sure?'); if (r == true) { window.location.replace('/delete_shipment?courier=<%= packages[i].courier %>&tracking_id=<%= packages[i].tracking_id %>'); }">
+                                        <span class="icon"><i class="mdi mdi-trash-can"></i></span>
+                                    </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <footer class="footer">
+                <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0">
+                    <div class="flex items-center justify-start space-x-3">
+                        <div>
+                            © 2021 Jeff Rescignano
+                        </div>
+                    </div>
+                </div>
+            </footer>
+
+            <div id="add-shipment-modal" class="modal">
+                <div class="modal-background --jb-modal-close"></div>
+                <div class="modal-card">
+                    <header class="modal-card-head">
+                        <p class="modal-card-title">Add a Shipment</p>
+                    </header>
+                    <section class="modal-card-body">
+                        <label for="add_shipment_courier">Carrier:</label>
+                        <select id="add_shipment_courier">
+                                <option value="usps">USPS</option>
+                                <option value="ups">UPS</option>
+                                <option value="fedex">FedEx</option>
+                                <option>-</option>
+                                <% Object.keys(tracker.COURIER).forEach(key => { %>
+                                    <option value="<%= tracker.COURIER[key].CODE %>"><%= tracker.COURIER[key].NAME %></option>
+                                    <% }); %>
+                            </select><br>
+                        <label for="add_shipment_tracking_id">Tracking ID:</label>
+                        <input type="text" id="add_shipment_tracking_id" placeholder="9400 1234 5678 9999 8765 00" />
+                    </section>
+                    <footer class="modal-card-foot">
+                        <button class="button blue --jb-modal-close" onclick="submit_shipping_info();">Add</button>
+                        <button class="button --jb-modal-close">Close</button>
+                    </footer>
+                </div>
+            </div>
+            <div id="add-bulk-shipment-modal" class="modal">
+                <div class="modal-background --jb-modal-close"></div>
+                <div class="modal-card">
+                    <header class="modal-card-head">
+                        <p class="modal-card-title">Add a Bulk Shipment</p>
+                    </header>
+                    <section class="modal-card-body">
+                        <form action="/add_bulk_shipment" method="POST" id="add_bulk_shipment_form">
+                            <label for="cars">Carrier:</label>
+                            <select name="courier" id="courier">
+                                <option value="usps">USPS</option>
+                                <option value="ups">UPS</option>
+                                <option value="fedex">FedEx</option>
+                                <option>-</option>
+                                <% Object.keys(tracker.COURIER).forEach(key => { %>
+                                    <option value="<%= tracker.COURIER[key].CODE %>"><%= tracker.COURIER[key].NAME %></option>
+                                    <% }); %>
+                            </select><br>
+                            <label for="tracking_ids">Tracking IDs:</label>
+                            <textarea id="tracking_ids" name="tracking_ids" rows="4" cols="50"></textarea>
+                        </form>
+                    </section>
+                    <footer class="modal-card-foot">
+                        <button class="button blue" onclick="document.getElementById('add_bulk_shipment_form').submit();">Add</button>
+                        <button class="button --jb-modal-close">Close</button>
+                    </footer>
+                </div>
+            </div>
+
+            <% for (var i = 0; i < packages.length; i++) { %>
+                <div id="tracking-modal-<%= packages[i].courier %>-<%= packages[i].tracking_id %>" class="modal">
+                    <div class="modal-background --jb-modal-close"></div>
+                    <div class="modal-card">
+                        <header class="modal-card-head">
+                            <p class="modal-card-title">Tracking Information</p>
+                        </header>
+                        <section class="modal-card-body">
+                            <p>Carrier:
+                                <%= tracker.courier(packages[i].courier).NAME %>
+                            </p>
+                            <p>Tracking:
+                                <%= packages[i].tracking_id %>
+                                    <br><br><strong>Tracking History:</strong>
+                            </p>
+                            <hr>
+                            <p>
+                                <% for (var j = 0; j < packages[i].checkpoints.length; j++) { %>
+                                    <%= packages[i].checkpoints[j].staus %><br>
+                                        <%= packages[i].checkpoints[j].location %><br>
+                                            <%= packages[i].checkpoints[j].message %><br>
+                                                <%= packages[i].checkpoints[j].time %><br>
+                                                    <hr>
+                                                    <% } %>
+                            </p>
+                        </section>
+                        <footer class="modal-card-foot">
+                            <button class="button --jb-modal-close">Close</button>
+                            <button class="button red" type="button" onclick="var r = confirm('Are you sure?'); if (r == true) { window.location.replace('/delete_shipment?courier=<%= packages[i].courier %>&tracking_id=<%= packages[i].tracking_id %>'); }">Delete</button>
+                        </footer>
+                    </div>
+                </div>
+                <% } %>
+
+    </div>
+
+    <!-- Scripts below are for demo only -->
+    <script type="text/javascript" src="/js/main.js"></script>
+    <script type="text/javascript">
+        function filterTable() {
+            var filter = document.getElementById("tableFilter").value;
+            console.log("Filter: " + filter);
+            var tr = document.getElementById("pkgTable").getElementsByTagName("tr");
+
+            if (filter == "none") {
+                console.log("Filter detected as none")
+                for (i = 0; i < tr.length; i++) {
+                    console.log("Unhiding row: " + i);
+                    tr[i].style.display = "";
+                }
+            } else {
+                for (i = 1; i <= tr.length; i++) {
+                    var type = document.getElementById("pkgTable").getElementsByTagName("tr")[i].getElementsByTagName("td")[1].getElementsByTagName("span")[0].dataset.type;
+                    console.log("Row " + i + " type is " + type);
+                    if (type == filter) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+        function submit_shipping_info() {
+            var courier = document.getElementById("add_shipment_courier").value;
+            var tracking_id = document.getElementById("add_shipment_tracking_id").value;
+            (async() => {
+                const rawResponse = await fetch('/add_shipment', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        courier: courier,
+                        tracking_id: tracking_id
+                    })
+                });
+                const content = await rawResponse.json();
+
+                alert(content.msg);
+                document.getElementById('add_shipment_courier').value = "usps";
+                document.getElementById('add_shipment_tracking_id').value = "";
+            })();
+        }
+    </script>
+
+    <!-- Icons below are for demo only. Feel free to use any icon pack. Docs: https://bulma.io/documentation/elements/icon/ -->
+    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/4.9.95/css/materialdesignicons.min.css">
+
+</body>
+
+</html>

@@ -1,0 +1,52 @@
+version: "3"
+services:
+  deltrack:
+    build:
+      context: ./DelTrack
+      dockerfile: Dockerfile
+    container_name: DelTrack
+    restart: unless-stopped
+    environment:
+      TZ: America/New_York
+      #NODE_ENV: production
+      MONGO_STRING: ${MONGO_STRING}
+      SESSION_SECRET: ${SESSION_SECRET}
+      EMAIL_SERVER_NAME: ${EMAIL_SERVER_NAME}
+      EMAIL_HOST: ${EMAIL_HOST}
+      EMAIL_USER: ${EMAIL_USER}
+      EMAIL_PASS: ${EMAIL_PASS}
+      EMAIL_NAME: ${EMAIL_NAME}
+      NOTIFY_EMAIL: ${NOTIFY_EMAIL}
+      REGISTRATION: 1
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+    networks:
+      #- traefik-public
+      - deltrack-backend
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.deltrack.rule=Host(`deltrack.jeffresc.dev`)
+      - traefik.http.routers.deltrack.tls=true
+      - traefik.http.routers.deltrack.tls.certresolver=le
+      - traefik.http.services.deltrack.loadbalancer.server.port=3000
+  mongo:
+      image: mongo:latest
+      container_name: DelTrack-Mongo
+      ports:
+        - "27017:27017"
+      environment:
+        TZ: America/New_York
+        MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+        MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      #volumes:
+        #- /var/docker-data/DelTrack-Mongo:/data/db
+      networks:
+        - deltrack-backend
+
+networks:
+  #traefik-public:
+    #external: true
+  deltrack-backend:
+    driver: bridge

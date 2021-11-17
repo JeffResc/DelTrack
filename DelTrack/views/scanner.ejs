@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Scanner - DelTrack</title>
+
+    <!-- Tailwind is included -->
+    <link rel="stylesheet" href="css/main.css?v=1628755089081">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
+    <link rel="mask-icon" href="safari-pinned-tab.svg" color="#00b4b6" />
+
+    <meta name="description" content="Scanner - DelTrack">
+
+</head>
+
+<body>
+
+    <div id="app">
+
+        <nav id="navbar-main" class="navbar is-fixed-top">
+            <div class="navbar-brand">
+                <a class="navbar-item mobile-aside-button">
+                    <span class="icon"><i class="mdi mdi-forwardburger mdi-24px"></i></span>
+                </a>
+            </div>
+            <div class="navbar-brand is-right">
+                <a class="navbar-item --jb-navbar-menu-toggle" data-target="navbar-menu">
+                    <span class="icon"><i class="mdi mdi-dots-vertical mdi-24px"></i></span>
+                </a>
+            </div>
+            <div class="navbar-menu" id="navbar-menu">
+                <div class="navbar-end">
+                    <a title="Log out" class="navbar-item desktop-icon-only" href="/logout">
+                        <span class="icon"><i class="mdi mdi-logout"></i></span>
+                        <span>Log out</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <aside class="aside is-placed-left is-expanded">
+            <div class="aside-tools">
+                <div>
+                    Del<b class="font-black">Track</b>
+                </div>
+            </div>
+            <div class="menu is-menu-main">
+                <p class="menu-label">General</p>
+                <ul class="menu-list">
+                    <li>
+                        <a href="/">
+                            <span class="icon"><i class="mdi mdi-home"></i></span>
+                            <span class="menu-item-label">Track</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="/scanner">
+                            <span class="icon"><i class="mdi mdi-barcode"></i></span>
+                            <span class="menu-item-label">Scanner</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+
+        <section class="is-title-bar">
+            <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
+                <ul>
+                    <li>General</li>
+                    <li>Scanner</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="section main-section">
+            <div class="card has-table">
+                <div class="card-content">
+                    <label for="courier">Carrier:</label>
+                    <select name="courier" id="courier">
+                        <option value="usps">USPS</option>
+                        <option value="ups">UPS</option>
+                        <option value="fedex">FedEx</option>
+                        <option>-</option>
+                        <% Object.keys(tracker.COURIER).forEach(key=> { %>
+                            <option value="<%= tracker.COURIER[key].CODE %>">
+                                <%= tracker.COURIER[key].NAME %>
+                            </option>
+                            <% }); %>
+                    </select><br>
+                    <div id="qr-reader" style="width: 600px"></div>
+                </div>
+            </div>
+
+            <footer class="footer">
+                <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0">
+                    <div class="flex items-center justify-start space-x-3">
+                        <div>
+                            © 2021 Jeff Rescignano
+                        </div>
+                    </div>
+                </div>
+            </footer>
+
+    </div>
+
+    <!-- Scripts below are for demo only -->
+    <script type="text/javascript" src="js/main.min.js?v=1628755089081"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.0.9/dist/html5-qrcode.min.js"></script>
+    <script>
+        function onScanSuccess(decodedText, decodedResult) {
+            var courier = document.getElementById("courier").value;
+            if (decodedText.length == 30) {
+                // Detected USPS
+                decodedText = decodedText.slice(8);
+            }
+            var r = prompt("Tracking number", decodedText);
+            if (r) {
+                (async() => {
+                    const rawResponse = await fetch('/add_shipment', {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            courier: courier,
+                            tracking_id: decodedText
+                        })
+                    });
+                    const content = await rawResponse.json();
+
+                    alert(content.msg);
+                })();
+            }
+        }
+        var html5QrcodeScanner = new Html5QrcodeScanner(
+            "qr-reader", {
+                fps: 30
+            });
+        html5QrcodeScanner.render(onScanSuccess);
+    </script>
+    <!-- Icons below are for demo only. Feel free to use any icon pack. Docs: https://bulma.io/documentation/elements/icon/ -->
+    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/4.9.95/css/materialdesignicons.min.css">
+
+</body>
+
+</html>
