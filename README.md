@@ -1,6 +1,6 @@
 # DelTrack
 
-DelTrack is an all-in-one delivery tracking solution supporting 24 couriers (USPS, UPS, FedEx, DHL, etc.) and counting! Notifications can be setup for an email when a package has an exception or has not had a new tracking event in 24 hours.
+DelTrack is an all-in-one delivery tracking solution supporting 24 couriers ([USPS, UPS, FedEx, DHL, etc.](https://github.com/egg-/delivery-tracker#courier-list)) and counting! Notifications can be setup for an email when a package has an exception or has not had a new tracking event in 24 hours.
 
 ## Features
 - Track unlimited packages from a centralized location
