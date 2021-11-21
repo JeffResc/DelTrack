@@ -146,7 +146,7 @@ function addPackageToQueue(courier_code, tracking_id) {
 }
 
 function checkForUpdates() {
-    PackageQueue.countDocuments({ tracking_id: tracking_id, courier: courier_code }, (err, count) => {
+    PackageQueue.countDocuments({}, (err, count) => {
         if (err) console.error(err);
         if (count == 0) {
             Package.find({ status: { $ne: "Delivered" }, last_check: { $lt: new Date(Date.now() - 1000 * 60 * 60 * 6) } }, (err, packages) => {

@@ -97,12 +97,12 @@ app.get('/logout', (req, res, next) => {
     }
 });
 
-app.get('/delete_shipment', functions.ensureLogin, (req, res) => {
-    Package.findOneAndDelete({ courier: req.query.courier, tracking_id: req.query.tracking_id }, function(err, doc) {
+app.post('/delete_shipment', functions.ensureLogin, (req, res) => {
+    Package.findOneAndDelete({ courier: req.body.courier, tracking_id: req.body.tracking_id }, function(err, doc) {
         if (err) console.error(err);
-        PackageQueue.findOneAndDelete({ courier: req.query.courier, tracking_id: req.query.tracking_id }, function(err, doc) {
+        PackageQueue.findOneAndDelete({ courier: req.body.courier, tracking_id: req.body.tracking_id }, function(err, doc) {
             if (err) console.error(err);
-            res.redirect('/');
+            res.send(JSON.stringify({ msg: 'Successfully deleted ' + req.body.courier + ' ' + req.body.tracking_id }));
         });
     });
 });
@@ -146,5 +146,5 @@ functions.connectDB(function() {
     }, 10 * 1000); // 10 seconds
     setInterval(function() {
         functions.checkForUpdates();
-    }, 30 * 60 * 1000); // 30 seconds
+    }, 30 * 1000); // 30 seconds
 });

@@ -131,7 +131,7 @@
                         </thead>
                         <tbody>
                             <% for (var i = 0; i < packages.length; i++) { %>
-                                <tr>
+                                <tr id="tr-shipment-<%= packages[i].courier %>-<%= packages[i].tracking_id %>">
                                     <td class="checkbox-cell">
                                         <label class="checkbox">
                                     <input type="checkbox">
@@ -184,7 +184,7 @@
                                             <button class="button small green --jb-modal" data-target="tracking-modal-<%= packages[i].courier %>-<%= packages[i].tracking_id %>" type="button">
                                         <span class="icon"><i class="mdi mdi-eye"></i></span>
                                     </button>
-                                            <button class="button small red" type="button" onclick="var r = confirm('Are you sure?'); if (r == true) { window.location.replace('/delete_shipment?courier=<%= packages[i].courier %>&tracking_id=<%= packages[i].tracking_id %>'); }">
+                                            <button class="button small red" type="button" onclick="deleteShipment('<%= packages[i].courier %>', '<%= packages[i].tracking_id %>');">
                                         <span class="icon"><i class="mdi mdi-trash-can"></i></span>
                                     </button>
                                         </div>
@@ -345,6 +345,29 @@
                 document.getElementById('add_shipment_courier').value = "usps";
                 document.getElementById('add_shipment_tracking_id').value = "";
             })();
+        }
+
+        function deleteShipment(courier, tracking_id) {
+            var r = confirm("Are you sure?");
+            if (r == true) {
+                (async() => {
+                    const rawResponse = await fetch('/delete_shipment', {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            courier: courier,
+                            tracking_id: tracking_id
+                        })
+                    });
+                    const content = await rawResponse.json();
+
+                    document.getElementById('tr-shipment-' + courier + '-' + tracking_id).remove();
+                    alert(content.msg);
+                })();
+            }
         }
     </script>
 
