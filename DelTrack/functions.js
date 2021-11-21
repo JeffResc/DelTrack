@@ -39,7 +39,7 @@ function notifyUser(subject, message, pkg) {
             from: '"' + process.env.EMAIL_NAME + '" <' + process.env.EMAIL_USER + '>', // sender address
             to: process.env.NOTIFY_EMAIL, // list of receivers
             subject: subject, // Subject line
-            text: message // plain text body
+            text: message + '\n\nLastMessage: ' + pkg.checkpoints[0].message + '\nLast Location: ' + pkg.checkpoints[0].location + '\nLast time: ' + pkg.checkpoints[0].time // plain text body
         });
         console.log("Notification has been sent to " + process.env.NOTIFY_EMAIL + " in regards to " + pkg.courier + " " + pkg.tracking_id);
         Package.findOneAndUpdate({ tracking_id: pkg.tracking_id, courier: pkg.courier }, { last_notification: Date.now() }, (err, doc) => {
