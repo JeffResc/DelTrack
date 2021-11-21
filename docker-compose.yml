@@ -21,12 +21,6 @@ services:
       - mongo
     networks:
       - deltrack-backend
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.deltrack.rule=Host(`deltrack.jeffresc.dev`)
-      - traefik.http.routers.deltrack.tls=true
-      - traefik.http.routers.deltrack.tls.certresolver=le
-      - traefik.http.services.deltrack.loadbalancer.server.port=3000
   mongo:
       image: mongo:latest
       container_name: DelTrack-Mongo
