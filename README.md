@@ -35,8 +35,8 @@ Create a .env file at the root directory where `docker-compose.yml` is and set t
 | EMAIL_PASS                 | The password of the email user.                                                                                               |
 | EMAIL_NAME                 | The full name of the email user.                                                                                              |
 | NOTIFY_EMAIL               | The email to send notifications to.                                                                                           |
-| MONGO_INITDB_ROOT_USERNAME | The initialized MongoDB root username. If using the MONGO_STRING from above, set this to "deltrack".                          |
-| MONGO_INITDB_ROOT_PASSWORD | The initialized MongoDB root password. If using the MONGO_STRING from above, set this to "deltrack".                          |
+| **MONGO_INITDB_ROOT_USERNAME** | The initialized MongoDB root username. If using the MONGO_STRING from above, set this to "deltrack".                          |
+| **MONGO_INITDB_ROOT_PASSWORD** | The initialized MongoDB root password. If using the MONGO_STRING from above, set this to "deltrack".                          |
 
 All variables in **bold** are required. All other variables not in bold can be set in the UI, but will be defaulted to these values on first start.
 
