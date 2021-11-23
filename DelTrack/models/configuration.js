@@ -9,7 +9,7 @@ var ConfigurationSchema = new Schema({
         type: String
     },
     email_port: {
-        type: Integer
+        type: Number
     },
     email_secure: {
         type: Boolean
@@ -33,13 +33,11 @@ var ConfigurationSchema = new Schema({
         type: Boolean
     },
     update_check_interval_hours: {
-        type: Integer
+        type: Number
     },
     notification_no_update_interval_hours: {
-        type: Integer
+        type: Number
     }
-
 });
-
 
 module.exports = mongoose.model('Configuration', ConfigurationSchema);
