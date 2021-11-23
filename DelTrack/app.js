@@ -121,32 +121,7 @@ app.post('/add_bulk_shipment', functions.ensureLogin, (req, res) => {
     res.redirect('/');
 });
 
-functions.connectDB(function() {
-    Configuration.countDocuments({}, (err, count) => {
-        if (err) throw err;
-        if (count == 0) {
-            console.log("No configuration found, creating default");
-            // Initialize the configuration
-            var config = new Configuration({
-                email_server_name: process.env.EMAIL_SERVER_NAME || '',
-                email_host: process.env.EMAIL_HOST || '',
-                email_port: 465,
-                email_secure: true,
-                email_user: process.env.EMAIL_USER || '',
-                email_pass: process.env.EMAIL_PASS || '',
-                email_name: process.env.EMAIL_NAME || '',
-                notification_email: process.env.NOTIFY_EMAIL || '',
-                issue_notification_enabled: false,
-                delivered_notification_enabled: false,
-                update_check_interval_hours: 6,
-                notification_no_update_interval_hours: 48
-            });
-            config.save()
-        } else {
-            console.log("Configuration found, loading from database");
-        }
-    });
-
+function start_server() {
     functions.createTransporter();
 
     app.listen(3000, () => {
@@ -175,4 +150,32 @@ functions.connectDB(function() {
     setInterval(function() {
         functions.checkForUpdates();
     }, 30 * 1000); // 30 seconds
+}
+
+functions.connectDB(function() {
+    Configuration.countDocuments({}, (err, count) => {
+        if (err) throw err;
+        if (count == 0) {
+            console.log("No configuration found, creating default");
+            // Initialize the configuration
+            var config = new Configuration({
+                email_server_name: process.env.EMAIL_SERVER_NAME || '',
+                email_host: process.env.EMAIL_HOST || '',
+                email_port: 465,
+                email_secure: true,
+                email_user: process.env.EMAIL_USER || '',
+                email_pass: process.env.EMAIL_PASS || '',
+                email_name: process.env.EMAIL_NAME || '',
+                notification_email: process.env.NOTIFY_EMAIL || '',
+                issue_notification_enabled: false,
+                delivered_notification_enabled: false,
+                update_check_interval_hours: 6,
+                notification_no_update_interval_hours: 48
+            });
+            config.save()
+        } else {
+            console.log("Configuration found, loading from database");
+        }
+        start_server();
+    });
 });
