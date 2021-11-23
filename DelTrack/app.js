@@ -10,7 +10,8 @@ const MongoStore = require('connect-mongo');
 const functions = require('./functions');
 const User = require('./models/user');
 const Package = require('./models/package');
-const PackageQueue = require('./models/package_queue')
+const PackageQueue = require('./models/package_queue');
+const Configuration = require('./models/configuration');
 
 const app = express();
 app.set('view engine', 'ejs');
@@ -121,6 +122,30 @@ app.post('/add_bulk_shipment', functions.ensureLogin, (req, res) => {
 });
 
 functions.connectDB(function() {
+    Configuration.countDocuments({}, (err, count) => {
+        if (err) throw err;
+        if (count == 0) {
+            // Initialize the configuration
+            var config = new Configuration({
+                email_server_name: process.env.EMAIL_SERVER_NAME || '',
+                email_host: process.env.EMAIL_HOST || '',
+                email_port: 465,
+                email_secure: true,
+                email_user: process.env.EMAIL_USER || '',
+                email_pass: process.env.EMAIL_PASS || '',
+                email_name: process.env.EMAIL_NAME || '',
+                notification_email: process.env.NOTIFY_EMAIL || '',
+                issue_notification_enabled: false,
+                delivered_notification_enabled: false,
+                update_check_interval_hours: 6,
+                notification_no_update_interval_hours: 48
+            });
+            config.save()
+        }
+    });
+
+    functions.createTransporter();
+
     app.listen(3000, () => {
         console.log(`DelTrack is listening at http://localhost:3000`);
     });

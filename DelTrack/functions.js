@@ -4,19 +4,27 @@ const nodemailer = require("nodemailer");
 
 const Package = require('./models/package');
 const PackageQueue = require('./models/package_queue');
+const Configuration = require('./models/configuration');
 
-let transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST,
-    port: 465,
-    secure: true, // true for 465, false for other ports
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-    },
-    tls: {
-        servername: process.env.EMAIL_SERVER_NAME
-    }
-});
+var transporter = "";
+
+function createTransporter() {
+    getConfig((config) => {
+        transporter = nodemailer.createTransport({
+            host: config.email_host,
+            port: 465,
+            secure: config.email_secure,
+            auth: {
+                user: config.email_user,
+                pass: config.email_pass,
+            },
+            tls: {
+                servername: config.email_server_name
+            }
+        });
+    });
+}
+
 
 async function connectDB(cb) {
     return await mongoose.connect(process.env.MONGO_STRING, {
@@ -33,33 +41,39 @@ function ensureLogin(req, res, next) {
     return req.isAuthenticated() ? next() : res.redirect('/login');
 }
 
-function notifyUser(subject, message, pkg) {
-    if (typeof pkg.last_notification == 'undefined' || new Date(pkg.last_notification).getTime() < new Date(new Date() - (24 * 60 * 60 * 1000)).getTime()) {
-        transporter.sendMail({
-            from: '"' + process.env.EMAIL_NAME + '" <' + process.env.EMAIL_USER + '>', // sender address
-            to: process.env.NOTIFY_EMAIL, // list of receivers
-            subject: subject, // Subject line
-            text: message + '\n\nLastMessage: ' + pkg.checkpoints[0].message + '\nLast Location: ' + pkg.checkpoints[0].location + '\nLast time: ' + pkg.checkpoints[0].time // plain text body
-        });
-        console.log("Notification has been sent to " + process.env.NOTIFY_EMAIL + " in regards to " + pkg.courier + " " + pkg.tracking_id);
-        Package.findOneAndUpdate({ tracking_id: pkg.tracking_id, courier: pkg.courier }, { last_notification: Date.now() }, (err, doc) => {
-            if (err) console.error(err);
-        });
-    } else {
-        console.log("Notification has already been sent to " + process.env.NOTIFY_EMAIL + " within the past 24 hours");
-    }
+function notifyUser(subject, message, pkg, type) {
+    getConfig((config) => {
+        if ((config.issue_notification_enabled && type == "issue") || (delivered_notification_enabled && type == "delivered")) {
+            if (typeof pkg.last_notification == 'undefined' || new Date(pkg.last_notification).getTime() < new Date(new Date() - (24 * 60 * 60 * 1000)).getTime()) {
+                transporter.sendMail({
+                    from: '"' + config.email_name + '" <' + config.email_user + '>', // sender address
+                    to: config.notification_email, // list of receivers
+                    subject: subject, // Subject line
+                    text: message + '\n\nLastMessage: ' + pkg.checkpoints[0].message + '\nLast Location: ' + pkg.checkpoints[0].location + '\nLast time: ' + pkg.checkpoints[0].time // plain text body
+                });
+                console.log("Notification has been sent to " + config.notification_email + " in regards to " + pkg.courier + " " + pkg.tracking_id);
+                Package.findOneAndUpdate({ tracking_id: pkg.tracking_id, courier: pkg.courier }, { last_notification: Date.now() }, (err, doc) => {
+                    if (err) console.error(err);
+                });
+            } else {
+                console.log("Notification has already been sent to " + config.notification_email + " within the past 24 hours");
+            }
+        }
+    });
 }
 
 function checkAndNotifyPackages(pkg) {
-    if (pkg.status === "Returned" || pkg.status === "Exception" || pkg.status === "FailAttempt") {
-        notifyUser("DelTrack Package Alert", "Package " + pkg.courier + " " + pkg.tracking_id + " has been new status alert: " + pkg.status, pkg);
-    } else if (pkg.status === "InfoRecieved" && new Date(pkg.last_update).getTime() < new Date(new Date() - (48 * 60 * 60 * 1000)).getTime()) {
-        notifyUser("DelTrack Package Alert", "Package " + pkg.courier + " " + pkg.tracking_id + " has not been checked into the postal system in at least 48 hours.", pkg);
-    } else if (pkg.status === "InTransit" && new Date(pkg.last_update).getTime() < new Date(new Date() - (48 * 60 * 60 * 1000)).getTime()) {
-        notifyUser("DelTrack Package Alert", "Package " + pkg.courier + " " + pkg.tracking_id + " has not a tracking event in at least 48 hours.", pkg);
-    } else if (pkg.status == "Label Created, not yet in system" && new Date(pkg.created_at).getTime() < new Date(new Date() - (48 * 60 * 60 * 1000)).getTime()) {
-        notifyUser("DelTrack Package Alert", "Package " + pkg.courier + " " + pkg.tracking_id + " label has not been valid for at least 48 hours.", pkg);
-    }
+    getConfig((config) => {
+        if (pkg.status === "Returned" || pkg.status === "Exception" || pkg.status === "FailAttempt") {
+            notifyUser("DelTrack Package Alert", "Package " + pkg.courier + " " + pkg.tracking_id + " has been new status alert: " + pkg.status, pkg, "issue");
+        } else if (pkg.status === "InfoRecieved" && new Date(pkg.last_update).getTime() < new Date(new Date() - (config.notification_no_update_interval_hours * 60 * 60 * 1000)).getTime()) {
+            notifyUser("DelTrack Package Alert", "Package " + pkg.courier + " " + pkg.tracking_id + " has not been checked into the postal system in at least 48 hours.", pkg, "issue");
+        } else if (pkg.status === "InTransit" && new Date(pkg.last_update).getTime() < new Date(new Date() - (config.notification_no_update_interval_hours * 60 * 60 * 1000)).getTime()) {
+            notifyUser("DelTrack Package Alert", "Package " + pkg.courier + " " + pkg.tracking_id + " has not a tracking event in at least 48 hours.", pkg, "issue");
+        } else if (pkg.status == "Label Created, not yet in system" && new Date(pkg.created_at).getTime() < new Date(new Date() - (config.notification_no_update_interval_hours * 60 * 60 * 1000)).getTime()) {
+            notifyUser("DelTrack Package Alert", "Package " + pkg.courier + " " + pkg.tracking_id + " label has not been valid for at least 48 hours.", pkg, "issue");
+        }
+    });
 }
 
 function addAndTrack(courier_code, tracking_id, cb) {
@@ -149,15 +163,24 @@ function checkForUpdates() {
     PackageQueue.countDocuments({}, (err, count) => {
         if (err) console.error(err);
         if (count == 0) {
-            Package.find({ status: { $ne: "Delivered" }, last_check: { $lt: new Date(Date.now() - 1000 * 60 * 60 * 6) } }, (err, packages) => {
-                if (err) console.error(err);
-                packages.forEach(package => {
-                    addPackageToQueue(package.courier, package.tracking_id);
+            getConfig((config) => {
+                Package.find({ status: { $ne: "Delivered" }, last_check: { $lt: new Date(Date.now() - 1000 * 60 * 60 * config.update_check_interval_hours) } }, (err, packages) => {
+                    if (err) console.error(err);
+                    packages.forEach(package => {
+                        addPackageToQueue(package.courier, package.tracking_id);
+                    });
                 });
             });
         } else {
             console.log("Package queue is not empty, unable to add updates to queue");
         }
+    });
+}
+
+function getConfig(cb) {
+    Configuration.find({}, (err, config) => {
+        if (err) throw err;
+        cb(config[0]);
     });
 }
 
@@ -169,5 +192,7 @@ module.exports = {
     addAndTrack,
     addPackageToQueue,
     trackAndUpdate,
-    checkForUpdates
+    checkForUpdates,
+    createTransporter,
+    getConfig
 };

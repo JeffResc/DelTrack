@@ -27,8 +27,8 @@ Login Page
 Create a .env file at the root directory where `docker-compose.yml` is and set the following environment variables:
 | Variable                   | Description                                                                                                                   |
 |----------------------------|-------------------------------------------------------------------------------------------------------------------------------|
-| MONGO_STRING               | Your MongoDB URI String. Should be something similar to: "mongodb://deltrack:deltrack@mongo:27017/deltrack?authSource=admin". |
-| SESSION_SECRET             | A random session secret string.                                                                                               |
+| *MONGO_STRING*               | Your MongoDB URI String. Should be something similar to: "mongodb://deltrack:deltrack@mongo:27017/deltrack?authSource=admin". |
+| *SESSION_SECRET*             | A random session secret string.                                                                                               |
 | EMAIL_SERVER_NAME          | The SMTP server's name. Usually it's FQDN.                                                                                    |
 | EMAIL_HOST                 | The host IP/domain of the SMTP server.                                                                                        |
 | EMAIL_USER                 | The username of the email user. Usually the user's email address/                                                             |
@@ -37,6 +37,7 @@ Create a .env file at the root directory where `docker-compose.yml` is and set t
 | NOTIFY_EMAIL               | The email to send notifications to.                                                                                           |
 | MONGO_INITDB_ROOT_USERNAME | The initialized MongoDB root username. If using the MONGO_STRING from above, set this to "deltrack".                          |
 | MONGO_INITDB_ROOT_PASSWORD | The initialized MongoDB root password. If using the MONGO_STRING from above, set this to "deltrack".                          |
+All variables in *bold* are required. All other variables not in bold can be set in the UI, but will be defaulted to these values on first start.
 
 ### Other variables
 Set the `REGISTRATION=1` environment variable in the DelTrack container to enable user registration. Set the `REGISTRATION=0` environment variable in the DelTrack container to disable user registration.
