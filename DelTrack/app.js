@@ -125,6 +125,7 @@ functions.connectDB(function() {
     Configuration.countDocuments({}, (err, count) => {
         if (err) throw err;
         if (count == 0) {
+            console.log("No configuration found, creating default");
             // Initialize the configuration
             var config = new Configuration({
                 email_server_name: process.env.EMAIL_SERVER_NAME || '',
@@ -141,6 +142,8 @@ functions.connectDB(function() {
                 notification_no_update_interval_hours: 48
             });
             config.save()
+        } else {
+            console.log("Configuration found, loading from database");
         }
     });
 
