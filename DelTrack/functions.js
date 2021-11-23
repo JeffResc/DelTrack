@@ -64,7 +64,9 @@ function notifyUser(subject, message, pkg, type) {
 
 function checkAndNotifyPackages(pkg) {
     getConfig((config) => {
-        if (pkg.status === "Returned" || pkg.status === "Exception" || pkg.status === "FailAttempt") {
+        if (pkg.status == "Delivered") {
+            notifyUser("DelTrack Package Alert", "Package " + pkg.tracking_id + " has been delivered to " + pkg.destination, pkg, "delivered");
+        } else if (pkg.status === "Returned" || pkg.status === "Exception" || pkg.status === "FailAttempt") {
             notifyUser("DelTrack Package Alert", "Package " + pkg.courier + " " + pkg.tracking_id + " has been new status alert: " + pkg.status, pkg, "issue");
         } else if (pkg.status === "InfoRecieved" && new Date(pkg.last_update).getTime() < new Date(new Date() - (config.notification_no_update_interval_hours * 60 * 60 * 1000)).getTime()) {
             notifyUser("DelTrack Package Alert", "Package " + pkg.courier + " " + pkg.tracking_id + " has not been checked into the postal system in at least 48 hours.", pkg, "issue");
