@@ -193,16 +193,16 @@
                                         <small class="text-gray-500" title="<%= packages[i].created_at %>"><%= packages[i].created_at.toDateString() %></small>
                                     </td>
                                     <td class="actions-cell">
-                                        <button class="button small blue" type="button" onclick="track_and_update('<%= packages[i].courier %>', '<%= packages[i].tracking_id %>');">
-                                            <span class="icon"><i class="mdi mdi-refresh"></i></span>
-                                        </button>
                                         <div class="buttons right nowrap">
+                                            <button class="button small blue" type="button" onclick="track_and_update('<%= packages[i].courier %>', '<%= packages[i].tracking_id %>');">
+                                                <span class="icon"><i class="mdi mdi-refresh"></i></span>
+                                            </button>
                                             <button class="button small green --jb-modal" data-target="tracking-modal-<%= packages[i].courier %>-<%= packages[i].tracking_id %>" type="button">
-                                        <span class="icon"><i class="mdi mdi-eye"></i></span>
-                                    </button>
+                                                <span class="icon"><i class="mdi mdi-eye"></i></span>
+                                            </button>
                                             <button class="button small red" type="button" onclick="deleteShipment('<%= packages[i].courier %>', '<%= packages[i].tracking_id %>');">
-                                        <span class="icon"><i class="mdi mdi-trash-can"></i></span>
-                                    </button>
+                                                <span class="icon"><i class="mdi mdi-trash-can"></i></span>
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -403,7 +403,7 @@
 
         function track_and_update(courier, tracking_id) {
             (async() => {
-                const rawResponse = await fetch('/track_shipment', {
+                const rawResponse = await fetch('/track_and_update', {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
