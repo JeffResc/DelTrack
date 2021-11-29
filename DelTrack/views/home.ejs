@@ -289,7 +289,7 @@
                         </section>
                         <footer class="modal-card-foot">
                             <button class="button --jb-modal-close">Close</button>
-                            <button class="button red" type="button" onclick="var r = confirm('Are you sure?'); if (r == true) { window.location.replace('/delete_shipment?courier=<%= packages[i].courier %>&tracking_id=<%= packages[i].tracking_id %>'); }">Delete</button>
+                            <button class="button red" type="button" onclick="deleteShipment('<%= packages[i].courier %>', '<%= packages[i].tracking_id %>');">Delete</button>
                         </footer>
                     </div>
                 </div>
