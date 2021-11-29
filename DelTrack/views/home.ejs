@@ -178,10 +178,10 @@
                                     </td>
                                     <td data-label="EDD">
                                         <% if (typeof packages[i].edd !== 'undefined' && packages[i].edd) { %>
-                                            <%= packages[i].edd %>
-                                                <% } else { %>
-                                                    N/A
-                                                    <% } %>
+                                            <small class="text-gray-500" title="<%= packages[i].edd %>"><%= packages[i].edd %></small>
+                                            <% } else { %>
+                                                <small class="text-gray-500" title="N/A">N/A</small>
+                                                <% } %>
                                     </td>
                                     <td data-label="Last Check">
                                         <small class="text-gray-500" title="<%= packages[i].last_check %>"><%= packages[i].last_check.toDateString() %></small>
