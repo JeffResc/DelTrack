@@ -124,6 +124,21 @@ app.post('/add_bulk_shipment', functions.ensureLogin, (req, res) => {
     res.redirect('/');
 });
 
+app.post('/submit_settings', functions.ensureLogin, (req, res) => {
+    Configuration.findOneAndUpdate({}, {
+        $set: req.body
+    }, {
+        upsert: true
+    }, function(err, doc) {
+        if (err) console.error(err);
+        console.log(doc);
+        res.send(JSON.stringify({ msg: 'Successfully updated settings. Restarting server for changes to take effect, please wait a moment...' }));
+        setTimeout(() => {
+            process.exit();
+        }, 3000);
+    });
+});
+
 function start_server() {
     functions.createTransporter();
 

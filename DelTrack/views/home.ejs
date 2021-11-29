@@ -245,16 +245,32 @@
                     </header>
                     <section class="modal-card-body">
                         <label for="settings_email_server_name">Email server name:</label>
-                        <input type="text" id="settings_email_server_name" placeholder="mail.example.com" value="<%= configuration.email_server_name %>" />
+                        <input type="text" id="settings_email_server_name" placeholder="mail.example.com" value="<%= configuration.email_server_name %>" /><br>
                         <label for="settings_email_host">Email server host:</label>
-                        <input type="text" id="settings_email_host" placeholder="100.100.100.100" value="<%= configuration.email_host %>" />
+                        <input type="text" id="settings_email_host" placeholder="100.100.100.100" value="<%= configuration.email_host %>" /><br>
                         <label for="settings_email_port">Email server port:</label>
-                        <input type="number" id="settings_email_port" placeholder="465" value="<%= configuration.email_port %>" />
+                        <input type="number" id="settings_email_port" placeholder="465" value="<%= configuration.email_port %>" /><br>
                         <label for="settings_email_secure">Email server secure:</label>
-                        <input type="number" id="settings_email_secure" <%=( configuration.email_secure ? "checked" : "") %> />
+                        <input type="checkbox" id="settings_email_secure" <%=( configuration.email_secure ? "checked" : "") %> /><br>
+                        <label for="settings_email_user">Email server user:</label>
+                        <input type="text" id="settings_email_user" placeholder="user@example.com" value="<%= configuration.email_user %>" /><br>
+                        <label for="setting_email_pass">Email server pass:</label>
+                        <input type="text" id="setting_email_pass" placeholder="P@s5w0rD!" value="<%= configuration.email_pass %>" /><br>
+                        <label for="settings_email_name">Email server name:</label>
+                        <input type="text" id="settings_email_name" placeholder="John Doe" value="<%= configuration.email_name %>" /><br>
+                        <label for="settings_notification_email">Notification email:</label>
+                        <input type="text" id="settings_notification_email" placeholder="notify@me.com" value="<%= configuration.notification_email %>" /><br>
+                        <label for="settings_issue_notification_enabled">Issue notifications enabled:</label>
+                        <input type="checkbox" id="settings_issue_notification_enabled" <%=( configuration.issue_notification_enabled ? "checked" : "") %> /><br>
+                        <label for="settings_delivered_notification_enabled">Delivered notifications enabled:</label>
+                        <input type="checkbox" id="settings_delivered_notification_enabled" <%=( configuration.delivered_notification_enabled ? "checked" : "") %> /><br>
+                        <label for="settings_update_check_interval_hours">Update check interval (in hours):</label>
+                        <input type="number" id="settings_update_check_interval_hours" placeholder="6" value="<%= configuration.update_check_interval_hours %>" /><br>
+                        <label for="settings_notification_no_update_interval_hours">No update notification interval:</label>
+                        <input type="number" id="settings_notification_no_update_interval_hours" placeholder="48" value="<%= configuration.notification_no_update_interval_hours %>" /><br>
                     </section>
                     <footer class="modal-card-foot">
-                        <button class="button blue --jb-modal-close" onclick="submit_settings();">Add</button>
+                        <button class="button blue --jb-modal-close" onclick="submit_settings();">Submit</button>
                         <button class="button --jb-modal-close">Close</button>
                     </footer>
                 </div>
@@ -395,6 +411,36 @@
                     alert(content.msg);
                 })();
             }
+        }
+
+        function submit_settings() {
+            (async() => {
+                const rawResponse = await fetch('/submit_settings', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email_server_name: document.getElementById("settings_email_server_name").value,
+                        email_host: document.getElementById("settings_email_host").value,
+                        email_port: document.getElementById("settings_email_port").value,
+                        email_secure: (document.getElementById("settings_email_secure").value == "on" ? true : false),
+                        email_user: document.getElementById("settings_email_user").value,
+                        email_pass: document.getElementById("setting_email_pass").value,
+                        email_name: document.getElementById("settings_email_name").value,
+                        notification_email: document.getElementById("settings_notification_email").value,
+                        issue_notification_enabled: (document.getElementById("settings_issue_notification_enabled").value == "on" ? true : false),
+                        delivered_notification_enabled: (document.getElementById("settings_delivered_notification_enabled").value == "on" ? true : false),
+                        update_check_interval_hours: document.getElementById("settings_update_check_interval_hours").value,
+                        notification_no_update_interval_hours: document.getElementById("settings_notification_no_update_interval_hours").value
+                    })
+                });
+                const content = await rawResponse.json();
+
+                document.getElementById('tr-shipment-' + courier + '-' + tracking_id).remove();
+                alert(content.msg);
+            })();
         }
     </script>
 
