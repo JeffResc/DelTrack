@@ -38,9 +38,12 @@ app.use(express.static('static'));
 app.get('/', functions.ensureLogin, (req, res) => {
     Package.find({}, null, { sort: { last_update: -1 } }, function(err, docs) {
         if (err) throw err;
-        res.render('home', {
-            packages: docs,
-            tracker: tracker
+        functions.getConfig((config) => {
+            res.render('home', {
+                packages: docs,
+                tracker: tracker,
+                configuration: config
+            });
         });
     });
 });

@@ -36,6 +36,10 @@
             </div>
             <div class="navbar-menu" id="navbar-menu">
                 <div class="navbar-end">
+                    <a title="Settings" class="navbar-item desktop-icon-only --jb-modal" data-target="settings-modal" href="#">
+                        <span class="icon"><i class="mdi mdi-account-cog"></i></span>
+                        <span>Settings</span>
+                    </a>
                     <a title="Log out" class="navbar-item desktop-icon-only" href="/logout">
                         <span class="icon"><i class="mdi mdi-logout"></i></span>
                         <span>Log out</span>
@@ -228,6 +232,28 @@
                     </section>
                     <footer class="modal-card-foot">
                         <button class="button blue --jb-modal-close" onclick="submit_shipping_info();">Add</button>
+                        <button class="button --jb-modal-close">Close</button>
+                    </footer>
+                </div>
+            </div>
+            <div id="settings-modal" class="modal">
+                <div class="modal-background --jb-modal-close"></div>
+                <div class="modal-card">
+                    <header class="modal-card-head">
+                        <p class="modal-card-title">Configuration</p>
+                    </header>
+                    <section class="modal-card-body">
+                        <label for="settings_email_server_name">Email server name:</label>
+                        <input type="text" id="settings_email_server_name" placeholder="mail.example.com" value="<%= configuration.email_server_name %>" />
+                        <label for="settings_email_host">Email server host:</label>
+                        <input type="text" id="settings_email_host" placeholder="100.100.100.100" value="<%= configuration.email_host %>" />
+                        <label for="settings_email_port">Email server port:</label>
+                        <input type="number" id="settings_email_port" placeholder="465" value="<%= configuration.email_port %>" />
+                        <label for="settings_email_secure">Email server secure:</label>
+                        <input type="number" id="settings_email_secure" <%=( configuration.email_secure ? "checked" : "") %> />
+                    </section>
+                    <footer class="modal-card-foot">
+                        <button class="button blue --jb-modal-close" onclick="submit_settings();">Add</button>
                         <button class="button --jb-modal-close">Close</button>
                     </footer>
                 </div>
