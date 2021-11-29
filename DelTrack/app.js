@@ -125,7 +125,7 @@ app.post('/add_bulk_shipment', functions.ensureLogin, (req, res) => {
 });
 
 app.post('/track_and_update', functions.ensureLogin, (req, res) => {
-    functions.trackAndUpdate(req.body.courier_code, req.body.tracking_id);
+    functions.trackAndUpdate(req.body.courier, req.body.tracking_id);
     res.send(JSON.stringify({ msg: 'Successfully updated ' + req.body.courier_code + ' ' + req.body.tracking_id }));
 });
 
