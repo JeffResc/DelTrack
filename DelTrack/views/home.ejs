@@ -135,20 +135,20 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <% for (var i = 0; i < packages.length; i++) { %>
+                            <% for (var i=0; i < packages.length; i++) { %>
                                 <tr id="tr-shipment-<%= packages[i].courier %>-<%= packages[i].tracking_id %>">
                                     <td class="checkbox-cell">
                                         <label class="checkbox">
-                                    <input type="checkbox">
-                                    <span class="check"></span>
-                                </label>
+                                            <input type="checkbox">
+                                            <span class="check"></span>
+                                        </label>
                                     </td>
                                     <td class="image-cell">
-                                        <% if (packages[i].status == 'Delivered') { %>
+                                        <% if (packages[i].status=='Delivered' ) { %>
                                             <span title="Delivered" data-type="<%= packages[i].status %>" style="height: 10px; width: 10px; background-color: #218748; border-radius: 50%; display: inline-block;"></span>
-                                            <% } else if (packages[i].status == 'InTransit') { %>
+                                            <% } else if (packages[i].status=='InTransit' ) { %>
                                                 <span title="In Transit" data-type="<%= packages[i].status %>" style="height: 10px; width: 10px; background-color: #336; border-radius: 50%; display: inline-block;"></span>
-                                                <% } else if (packages[i].status == 'InfoReceived') { %>
+                                                <% } else if (packages[i].status=='InfoReceived' ) { %>
                                                     <span title="Info Recieved" data-type="<%= packages[i].status %>" style="height: 10px; width: 10px; background-color: #f39c12; border-radius: 50%; display: inline-block;"></span>
                                                     <% } else { %>
                                                         <span title="<%= packages[i].status %>" data-type="<%= packages[i].status %>" style="height: 10px; width: 10px; background-color: #e71921; border-radius: 50%; display: inline-block;"></span>
@@ -158,16 +158,22 @@
                                         <%= tracker.courier(packages[i].courier).NAME %>
                                     </td>
                                     <td data-label="Last Checkpoint">
-                                        <% if (typeof packages[i].checkpoints[0] !== 'undefined' && packages[i].checkpoints[0] && typeof packages[i].checkpoints[0].message !== 'undefined' && packages[i].checkpoints[0].message) { %>
+                                        <% if (typeof packages[i].checkpoints[0] !=='undefined' &&
+                                            packages[i].checkpoints[0] && typeof packages[i].checkpoints[0].message
+                                            !=='undefined' && packages[i].checkpoints[0].message) { %>
                                             <%= packages[i].checkpoints[0].message %>
                                                 <% } else { %>
                                                     <%= packages[i].status %>
                                                         <% } %>
                                                             <br>
-                                                            <small class="text-gray-500" title="<%= packages[i].tracking_id %>"><%= packages[i].tracking_id %></small>
+                                                            <small class="text-gray-500" title="<%= packages[i].tracking_id %>">
+                                                                <%= packages[i].tracking_id %>
+                                                            </small>
                                     </td>
                                     <td data-label="Location">
-                                        <% if (typeof packages[i].checkpoints[0] !== 'undefined' && packages[i].checkpoints[0] && typeof packages[i].checkpoints[0].location !== 'undefined' && packages[i].checkpoints[0].location) { %>
+                                        <% if (typeof packages[i].checkpoints[0] !=='undefined' &&
+                                            packages[i].checkpoints[0] && typeof packages[i].checkpoints[0].location
+                                            !=='undefined' && packages[i].checkpoints[0].location) { %>
                                             <%= packages[i].checkpoints[0].location %>
                                                 <% } else { %>
                                                     Unknown
@@ -177,20 +183,28 @@
                                         <%= packages[i].destination %>
                                     </td>
                                     <td data-label="EDD">
-                                        <% if (typeof packages[i].edd !== 'undefined' && packages[i].edd) { %>
-                                            <small class="text-gray-500" title="<%= packages[i].edd %>"><%= packages[i].edd %></small>
+                                        <% if (typeof packages[i].edd !=='undefined' && packages[i].edd) { %>
+                                            <small class="text-gray-500" title="<%= packages[i].edd %>">
+                                                <%= packages[i].edd %>
+                                            </small>
                                             <% } else { %>
                                                 <small class="text-gray-500" title="N/A">N/A</small>
                                                 <% } %>
                                     </td>
                                     <td data-label="Last Check">
-                                        <small class="text-gray-500" title="<%= packages[i].last_check %>"><%= packages[i].last_check.toDateString() %></small>
+                                        <small class="text-gray-500" title="<%= packages[i].last_check %>">
+                                            <%= packages[i].last_check.toDateString() %>
+                                        </small>
                                     </td>
                                     <td data-label="Last Update">
-                                        <small class="text-gray-500" title="<%= packages[i].last_update %>"><%= packages[i].last_update.toDateString() %></small>
+                                        <small class="text-gray-500" title="<%= packages[i].last_update %>">
+                                            <%= packages[i].last_update.toDateString() %>
+                                        </small>
                                     </td>
                                     <td data-label="Created At">
-                                        <small class="text-gray-500" title="<%= packages[i].created_at %>"><%= packages[i].created_at.toDateString() %></small>
+                                        <small class="text-gray-500" title="<%= packages[i].created_at %>">
+                                            <%= packages[i].created_at.toDateString() %>
+                                        </small>
                                     </td>
                                     <td class="actions-cell">
                                         <div class="buttons right nowrap">
@@ -231,14 +245,16 @@
                     <section class="modal-card-body">
                         <label for="add_shipment_courier">Carrier:</label>
                         <select id="add_shipment_courier">
-                                <option value="usps">USPS</option>
-                                <option value="ups">UPS</option>
-                                <option value="fedex">FedEx</option>
-                                <option>-</option>
-                                <% Object.keys(tracker.COURIER).forEach(key => { %>
-                                    <option value="<%= tracker.COURIER[key].CODE %>"><%= tracker.COURIER[key].NAME %></option>
-                                    <% }); %>
-                            </select><br>
+                            <option value="usps">USPS</option>
+                            <option value="ups">UPS</option>
+                            <option value="fedex">FedEx</option>
+                            <option>-</option>
+                            <% Object.keys(tracker.COURIER).forEach(key=> { %>
+                                <option value="<%= tracker.COURIER[key].CODE %>">
+                                    <%= tracker.COURIER[key].NAME %>
+                                </option>
+                                <% }); %>
+                        </select><br>
                         <label for="add_shipment_tracking_id">Tracking ID:</label>
                         <input type="text" id="add_shipment_tracking_id" placeholder="9400 1234 5678 9999 8765 00" />
                     </section>
@@ -262,7 +278,7 @@
                         <label for="settings_email_port">Email server port:</label>
                         <input type="number" id="settings_email_port" placeholder="465" value="<%= configuration.email_port %>" /><br>
                         <label for="settings_email_secure">Email server secure:</label>
-                        <input type="checkbox" id="settings_email_secure" <%=( configuration.email_secure ? "checked" : "") %> /><br>
+                        <input type="checkbox" id="settings_email_secure" <%=( configuration.email_secure ? "checked" : "" ) %> /><br>
                         <label for="settings_email_user">Email server user:</label>
                         <input type="text" id="settings_email_user" placeholder="user@example.com" value="<%= configuration.email_user %>" /><br>
                         <label for="setting_email_pass">Email server pass:</label>
@@ -272,12 +288,13 @@
                         <label for="settings_notification_email">Notification email:</label>
                         <input type="text" id="settings_notification_email" placeholder="notify@me.com" value="<%= configuration.notification_email %>" /><br>
                         <label for="settings_issue_notification_enabled">Issue notifications enabled:</label>
-                        <input type="checkbox" id="settings_issue_notification_enabled" <%=( configuration.issue_notification_enabled ? "checked" : "") %> /><br>
+                        <input type="checkbox" id="settings_issue_notification_enabled" <%=( configuration.issue_notification_enabled ? "checked" : "" ) %> /><br>
                         <label for="settings_delivered_notification_enabled">Delivered notifications enabled:</label>
-                        <input type="checkbox" id="settings_delivered_notification_enabled" <%=( configuration.delivered_notification_enabled ? "checked" : "") %> /><br>
+                        <input type="checkbox" id="settings_delivered_notification_enabled" <%=( configuration.delivered_notification_enabled ? "checked" : "" ) %> /><br>
                         <label for="settings_update_check_interval_hours">Update check interval (in hours):</label>
                         <input type="number" id="settings_update_check_interval_hours" placeholder="6" value="<%= configuration.update_check_interval_hours %>" /><br>
-                        <label for="settings_notification_no_update_interval_hours">No update notification interval:</label>
+                        <label for="settings_notification_no_update_interval_hours">No update notification
+                            interval:</label>
                         <input type="number" id="settings_notification_no_update_interval_hours" placeholder="48" value="<%= configuration.notification_no_update_interval_hours %>" /><br>
                     </section>
                     <footer class="modal-card-foot">
@@ -300,8 +317,10 @@
                                 <option value="ups">UPS</option>
                                 <option value="fedex">FedEx</option>
                                 <option>-</option>
-                                <% Object.keys(tracker.COURIER).forEach(key => { %>
-                                    <option value="<%= tracker.COURIER[key].CODE %>"><%= tracker.COURIER[key].NAME %></option>
+                                <% Object.keys(tracker.COURIER).forEach(key=> { %>
+                                    <option value="<%= tracker.COURIER[key].CODE %>">
+                                        <%= tracker.COURIER[key].NAME %>
+                                    </option>
                                     <% }); %>
                             </select><br>
                             <label for="tracking_ids">Tracking IDs:</label>
@@ -315,7 +334,7 @@
                 </div>
             </div>
 
-            <% for (var i = 0; i < packages.length; i++) { %>
+            <% for (var i=0; i < packages.length; i++) { %>
                 <div id="tracking-modal-<%= packages[i].courier %>-<%= packages[i].tracking_id %>" class="modal">
                     <div class="modal-background --jb-modal-close"></div>
                     <div class="modal-card">
@@ -332,7 +351,7 @@
                             </p>
                             <hr>
                             <p>
-                                <% for (var j = 0; j < packages[i].checkpoints.length; j++) { %>
+                                <% for (var j=0; j < packages[i].checkpoints.length; j++) { %>
                                     <%= packages[i].checkpoints[j].staus %><br>
                                         <%= packages[i].checkpoints[j].location %><br>
                                             <%= packages[i].checkpoints[j].message %><br>
