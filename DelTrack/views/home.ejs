@@ -127,6 +127,7 @@
                                 <th>Last Checkpoint</th>
                                 <th>Location</th>
                                 <th>Destination</th>
+                                <th>EDD</th>
                                 <th>Last Check</th>
                                 <th>Last Update</th>
                                 <th>Created At</th>
@@ -155,6 +156,13 @@
                                     </td>
                                     <td data-label="Carrier">
                                         <%= tracker.courier(packages[i].courier).NAME %>
+                                    </td>
+                                    <td data-label="EDD">
+                                        <% if (typeof packages[i].edd !== 'undefined' && packages[i].edd) { %>
+                                            <%= packages[i].edd %>
+                                                <% } else { %>
+                                                    N/A
+                                                    <% } %>
                                     </td>
                                     <td data-label="Last Checkpoint">
                                         <% if (typeof packages[i].checkpoints[0] !== 'undefined' && packages[i].checkpoints[0] && typeof packages[i].checkpoints[0].message !== 'undefined' && packages[i].checkpoints[0].message) { %>
