@@ -437,8 +437,6 @@
                     })
                 });
                 const content = await rawResponse.json();
-
-                document.getElementById('tr-shipment-' + courier + '-' + tracking_id).remove();
                 alert(content.msg);
             })();
         }
