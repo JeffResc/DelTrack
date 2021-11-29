@@ -158,7 +158,7 @@
                                                 <% } else { %>
                                                     <%= packages[i].status %>
                                                         <% } %>
-
+                                                            <small class="text-gray-500" title="<%= packages[i].tracking_id %>"><%= packages[i].tracking_id %></small>
                                     </td>
                                     <td data-label="Location">
                                         <% if (typeof packages[i].checkpoints[0] !== 'undefined' && packages[i].checkpoints[0] && typeof packages[i].checkpoints[0].location !== 'undefined' && packages[i].checkpoints[0].location) { %>
