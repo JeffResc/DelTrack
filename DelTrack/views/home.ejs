@@ -157,13 +157,6 @@
                                     <td data-label="Carrier">
                                         <%= tracker.courier(packages[i].courier).NAME %>
                                     </td>
-                                    <td data-label="EDD">
-                                        <% if (typeof packages[i].edd !== 'undefined' && packages[i].edd) { %>
-                                            <%= packages[i].edd %>
-                                                <% } else { %>
-                                                    N/A
-                                                    <% } %>
-                                    </td>
                                     <td data-label="Last Checkpoint">
                                         <% if (typeof packages[i].checkpoints[0] !== 'undefined' && packages[i].checkpoints[0] && typeof packages[i].checkpoints[0].message !== 'undefined' && packages[i].checkpoints[0].message) { %>
                                             <%= packages[i].checkpoints[0].message %>
@@ -182,6 +175,13 @@
                                     </td>
                                     <td data-label="Destination">
                                         <%= packages[i].destination %>
+                                    </td>
+                                    <td data-label="EDD">
+                                        <% if (typeof packages[i].edd !== 'undefined' && packages[i].edd) { %>
+                                            <%= packages[i].edd %>
+                                                <% } else { %>
+                                                    N/A
+                                                    <% } %>
                                     </td>
                                     <td data-label="Last Check">
                                         <small class="text-gray-500" title="<%= packages[i].last_check %>"><%= packages[i].last_check.toDateString() %></small>
