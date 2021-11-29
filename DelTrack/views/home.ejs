@@ -193,6 +193,9 @@
                                         <small class="text-gray-500" title="<%= packages[i].created_at %>"><%= packages[i].created_at.toDateString() %></small>
                                     </td>
                                     <td class="actions-cell">
+                                        <button class="button small blue" type="button" onclick="track_and_update('<%= packages[i].courier %>', '<%= packages[i].tracking_id %>');">
+                                            <span class="icon"><i class="mdi mdi-refresh"></i></span>
+                                        </button>
                                         <div class="buttons right nowrap">
                                             <button class="button small green --jb-modal" data-target="tracking-modal-<%= packages[i].courier %>-<%= packages[i].tracking_id %>" type="button">
                                         <span class="icon"><i class="mdi mdi-eye"></i></span>
@@ -395,6 +398,26 @@
                 alert(content.msg);
                 document.getElementById('add_shipment_courier').value = "usps";
                 document.getElementById('add_shipment_tracking_id').value = "";
+            })();
+        }
+
+        function track_and_update(courier, tracking_id) {
+            (async() => {
+                const rawResponse = await fetch('/track_shipment', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        courier: courier,
+                        tracking_id: tracking_id
+                    })
+                });
+                const content = await rawResponse.json();
+
+                alert(content.msg);
+                location.reload();
             })();
         }
 

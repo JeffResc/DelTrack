@@ -124,6 +124,11 @@ app.post('/add_bulk_shipment', functions.ensureLogin, (req, res) => {
     res.redirect('/');
 });
 
+app.post('/track_and_update', functions.ensureLogin, (req, res) => {
+    functions.trackAndUpdate(req.body.courier_code, req.body.tracking_id);
+    res.send(JSON.stringify({ msg: 'Successfully updated ' + req.body.courier_code + ' ' + req.body.tracking_id }));
+});
+
 app.post('/submit_settings', functions.ensureLogin, (req, res) => {
     Configuration.findOneAndUpdate({}, {
         $set: req.body
