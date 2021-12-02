@@ -182,7 +182,7 @@
                                     <td data-label="Destination">
                                         <%= packages[i].destination %>
                                     </td>
-                                    <td data-label="EDD">
+                                    <!--td data-label="EDD">
                                         <% if (typeof packages[i].edd !=='undefined' && packages[i].edd) { %>
                                             <small class="text-gray-500" title="<%= packages[i].edd %>">
                                                 <%= packages[i].edd %>
@@ -190,7 +190,7 @@
                                             <% } else { %>
                                                 <small class="text-gray-500" title="N/A">N/A</small>
                                                 <% } %>
-                                    </td>
+                                    </td-->
                                     <td data-label="Last Check">
                                         <small class="text-gray-500" title="<%= packages[i].last_check %>">
                                             <%= moment(packages[i].last_check).fromNow() %>
