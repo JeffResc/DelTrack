@@ -193,17 +193,17 @@
                                     </td>
                                     <td data-label="Last Check">
                                         <small class="text-gray-500" title="<%= packages[i].last_check %>">
-                                            <%= packages[i].last_check.toDateString() %>
+                                            <%= moment(packages[i].last_check).fromNow() %>
                                         </small>
                                     </td>
                                     <td data-label="Last Update">
                                         <small class="text-gray-500" title="<%= packages[i].last_update %>">
-                                            <%= packages[i].last_update.toDateString() %>
+                                            <%= moment(packages[i].last_update).fromNow() %>
                                         </small>
                                     </td>
                                     <td data-label="Created At">
                                         <small class="text-gray-500" title="<%= packages[i].created_at %>">
-                                            <%= packages[i].created_at.toDateString() %>
+                                            <%= moment(packages[i].created_at).fromNow() %>
                                         </small>
                                     </td>
                                     <td class="actions-cell">

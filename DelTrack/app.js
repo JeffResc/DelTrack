@@ -6,6 +6,7 @@ const LocalStrategy = require('passport-local').Strategy;
 const bodyParser = require('body-parser');
 const tracker = require('delivery-tracker');
 const MongoStore = require('connect-mongo');
+const moment = require('moment');
 
 const functions = require('./functions');
 const User = require('./models/user');
@@ -43,7 +44,8 @@ app.get('/', functions.ensureLogin, (req, res) => {
                 packages: docs,
                 tracker: tracker,
                 configuration: config,
-                trackingURLHTML: functions.trackingURLHTML
+                trackingURLHTML: functions.trackingURLHTML,
+                moment: moment
             });
         });
     });
