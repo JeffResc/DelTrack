@@ -99,7 +99,7 @@ function addAndTrack(courier_code, tracking_id, cb) {
                 } else {
                     const dest = (data.status == "Delivered") ? (data.checkpoints[0].location) : (data.destination || "Unknown");
                     const edd = (data.status == "Delivered") ? ("N/A, Delivered") : (data.estimated_delivery_date);
-                    var new_package = new Package({ tracking_id: tracking_id, courier: courier_code, edd: edd, status: data.status, destination: dest, last_check: Date.now(), created_at: Date.now(), checkpoints: data.checkpoints, last_update: data.checkpoints[0].time });
+                    var new_package = new Package({ tracking_id: tracking_id, courier: courier_code, edd: edd, status: data.status, destination: dest, last_check: Date.now(), created_at: Date.now(), checkpoints: data.checkpoints, last_update: Date.now() });
                     new_package.save()
                         .then(() => cb(courier_code + " " + tracking_id + " added successfully"))
                         .catch((err) => {
@@ -133,7 +133,7 @@ function trackAndUpdate(courier_code, tracking_id) {
             //console.log(data);
             const dest = (data.status == "Delivered") ? (data.checkpoints[0].location) : (data.destination || "Unknown");
             const edd = (data.status == "Delivered") ? ("N/A, Delivered") : (data.estimated_delivery_date);
-            Package.findOneAndUpdate({ tracking_id: tracking_id, courier: courier_code }, { edd: edd, status: data.status, destination: dest, checkpoints: data.checkpoints, last_check: Date.now(), last_update: data.checkpoints[0].time }, { new: true }, (err, doc) => {
+            Package.findOneAndUpdate({ tracking_id: tracking_id, courier: courier_code }, { edd: edd, status: data.status, destination: dest, checkpoints: data.checkpoints, last_check: Date.now(), last_update: Date.now() }, { new: true }, (err, doc) => {
                 if (err) {
                     console.error(err);
                 } else {
