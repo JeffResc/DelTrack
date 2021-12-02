@@ -187,6 +187,18 @@ function getConfig(cb) {
     });
 }
 
+function trackingURLHTML(courier, tracking_id) {
+    switch (courier) {
+        case "usps":
+            return "<a href='https://tools.usps.com/go/TrackConfirmAction?tLabels=" + tracking_id + "' target='_blank'>" + tracking_id + "</a>";
+        case "ups":
+            return "<a href='https://www.ups.com/track?loc=en_US&tracknum=" + tracking_id + "' target='_blank'>" + tracking_id + "</a>";
+        case "fedex":
+            return "<a href='https://www.fedex.com/apps/fedextrack/?tracknumbers=" + tracking_id + "' target='_blank'>" + tracking_id + "</a>";
+    }
+    return "<a href='https://www.google.com/search?q=" + tracking_id + "' target='_blank'>" + tracking_id + "</a>";
+}
+
 module.exports = {
     connectDB,
     ensureLogin,
@@ -197,5 +209,6 @@ module.exports = {
     trackAndUpdate,
     checkForUpdates,
     createTransporter,
-    getConfig
+    getConfig,
+    trackingURLHTML
 };

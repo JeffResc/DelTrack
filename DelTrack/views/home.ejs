@@ -167,7 +167,7 @@
                                                         <% } %>
                                                             <br>
                                                             <small class="text-gray-500" title="<%= packages[i].tracking_id %>">
-                                                                <%= packages[i].tracking_id %>
+                                                                <%- trackingURLHTML(packages[i].courier, packages[i].tracking_id) %>
                                                             </small>
                                     </td>
                                     <td data-label="Location">
@@ -346,7 +346,7 @@
                                 <%= tracker.courier(packages[i].courier).NAME %>
                             </p>
                             <p>Tracking:
-                                <%= packages[i].tracking_id %>
+                                <%- trackingURLHTML(packages[i].courier, packages[i].tracking_id) %>
                                     <br><br><strong>Tracking History:</strong>
                             </p>
                             <hr>

@@ -42,7 +42,8 @@ app.get('/', functions.ensureLogin, (req, res) => {
             res.render('home', {
                 packages: docs,
                 tracker: tracker,
-                configuration: config
+                configuration: config,
+                trackingURLHTML: functions.trackingURLHTML
             });
         });
     });
