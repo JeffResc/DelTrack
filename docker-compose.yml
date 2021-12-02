@@ -22,7 +22,7 @@ services:
     networks:
       - deltrack-backend
   mongo:
-      image: mongo:4.4
+      image: mongo:5.0.4
       container_name: DelTrack-Mongo
       restart: unless-stopped
       environment:
