@@ -51,6 +51,10 @@ app.get('/', functions.ensureLogin, (req, res) => {
     });
 });
 
+app.get('/map', functions.ensureLogin, (req, res) => {
+    res.render('map');
+});
+
 app.get('/delivered', functions.ensureLogin, (req, res) => {
     Package.find({ status: "Delivered" }, null, { sort: { last_update: -1 } }, function(err, docs) {
         if (err) throw err;

@@ -9,6 +9,7 @@
 
     <!-- Tailwind is included -->
     <link rel="stylesheet" href="css/main.css?v=1628755089081">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin="" />
 
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
@@ -65,13 +66,13 @@
                             <span class="menu-item-label">Track Delivered</span>
                         </a>
                     </li>
-                    <li class="active">
+                    <li>
                         <a href="/scanner">
                             <span class="icon"><i class="mdi mdi-barcode"></i></span>
                             <span class="menu-item-label">Scanner</span>
                         </a>
                     </li>
-                    <li>
+                    <li class="active">
                         <a href="/map">
                             <span class="icon"><i class="mdi mdi-map"></i></span>
                             <span class="menu-item-label">Map</span>
@@ -85,7 +86,7 @@
             <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
                 <ul>
                     <li>General</li>
-                    <li>Scanner</li>
+                    <li>Map</li>
                 </ul>
             </div>
         </section>
@@ -93,19 +94,7 @@
         <section class="section main-section">
             <div class="card has-table">
                 <div class="card-content">
-                    <label for="courier">Carrier:</label>
-                    <select name="courier" id="courier">
-                        <option value="usps">USPS</option>
-                        <option value="ups">UPS</option>
-                        <option value="fedex">FedEx</option>
-                        <option>-</option>
-                        <% Object.keys(tracker.COURIER).forEach(key=> { %>
-                            <option value="<%= tracker.COURIER[key].CODE %>">
-                                <%= tracker.COURIER[key].NAME %>
-                            </option>
-                            <% }); %>
-                    </select><br>
-                    <div id="qr-reader" style="width: 600px"></div>
+                    <div id="map" style="height: 180px;"></div>
                 </div>
             </div>
 
@@ -123,40 +112,8 @@
 
     <!-- Scripts below are for demo only -->
     <script type="text/javascript" src="js/main.min.js?v=1628755089081"></script>
-    <script src="https://unpkg.com/html5-qrcode@2.0.9/dist/html5-qrcode.min.js"></script>
-    <script>
-        function onScanSuccess(decodedText, decodedResult) {
-            var courier = document.getElementById("courier").value;
-            if (decodedText.length == 30) {
-                // Detected USPS
-                decodedText = decodedText.slice(8);
-            }
-            var r = prompt("Tracking number", decodedText);
-            if (r) {
-                (async() => {
-                    const rawResponse = await fetch('/add_shipment', {
-                        method: 'POST',
-                        headers: {
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            courier: courier,
-                            tracking_id: decodedText
-                        })
-                    });
-                    const content = await rawResponse.json();
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
 
-                    alert(content.msg);
-                })();
-            }
-        }
-        var html5QrcodeScanner = new Html5QrcodeScanner(
-            "qr-reader", {
-                fps: 30
-            });
-        html5QrcodeScanner.render(onScanSuccess);
-    </script>
     <!-- Icons below are for demo only. Feel free to use any icon pack. Docs: https://bulma.io/documentation/elements/icon/ -->
     <link rel="stylesheet" href="https://cdn.materialdesignicons.com/4.9.95/css/materialdesignicons.min.css">
 
