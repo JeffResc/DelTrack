@@ -67,7 +67,15 @@ app.get('/delivered', functions.ensureLogin, (req, res) => {
 });
 
 app.get('/api/get_all_packages', functions.ensureLogin, (req, res) => {
-    Package.find({}, null, { sort: { last_update: -1 } }, function(err, docs) {
+    // Format: YYY-MM-DD
+    // Filter packages by created_at if it is set
+    var query = {};
+    if (typeof req.query.created_at !== 'undefined' && req.query.created_at !== '') {
+        query = { created_at: { $gte: created_at } };
+    } else {
+        query = {};
+    }
+    Package.find(query, null, { sort: { last_update: -1 } }, function(err, docs) {
         if (err) throw err;
         res.json(docs);
     });
