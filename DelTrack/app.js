@@ -71,7 +71,7 @@ app.get('/api/get_all_packages', functions.ensureLogin, (req, res) => {
     // Filter packages by created_at if it is set
     var query = {};
     if (typeof req.query.created_at !== 'undefined' && req.query.created_at !== '') {
-        query = { created_at: { $gte: created_at } };
+        query = { created_at: { $gte: req.query.created_at } };
     } else {
         query = {};
     }
