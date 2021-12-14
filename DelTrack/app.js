@@ -37,10 +37,25 @@ passport.deserializeUser(User.deserializeUser());
 app.use(express.static('static'));
 
 app.get('/', functions.ensureLogin, (req, res) => {
-    Package.find({}, null, { sort: { last_update: -1 } }, function(err, docs) {
+    Package.find({ status: { $ne: "Delivered" } }, null, { sort: { last_update: -1 } }, function(err, docs) {
         if (err) throw err;
         functions.getConfig((config) => {
             res.render('home', {
+                packages: docs,
+                tracker: tracker,
+                configuration: config,
+                trackingURLHTML: functions.trackingURLHTML,
+                moment: moment
+            });
+        });
+    });
+});
+
+app.get('/delivered', functions.ensureLogin, (req, res) => {
+    Package.find({ status: "Delivered" }, null, { sort: { last_update: -1 } }, function(err, docs) {
+        if (err) throw err;
+        functions.getConfig((config) => {
+            res.render('delivered', {
                 packages: docs,
                 tracker: tracker,
                 configuration: config,
