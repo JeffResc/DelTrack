@@ -66,6 +66,13 @@ app.get('/delivered', functions.ensureLogin, (req, res) => {
     });
 });
 
+app.get('/api/get_all_packages', functions.ensureLogin, (req, res) => {
+    Package.find({}, null, { sort: { last_update: -1 } }, function(err, docs) {
+        if (err) throw err;
+        res.json(docs);
+    });
+});
+
 app.get('/scanner', functions.ensureLogin, (req, res) => {
     res.render('scanner', {
         tracker: tracker
