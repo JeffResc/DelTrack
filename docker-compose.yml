@@ -7,7 +7,7 @@ services:
     container_name: DelTrack
     restart: unless-stopped
     environment:
-      MONGO_STRING: ${MONGO_STRING}
+      MONGO_STRING: mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongo:27017/deltrack?authSource=admin
       SESSION_SECRET: ${SESSION_SECRET}
       EMAIL_SERVER_NAME: ${EMAIL_SERVER_NAME}
       EMAIL_HOST: ${EMAIL_HOST}
@@ -15,6 +15,7 @@ services:
       EMAIL_PASS: ${EMAIL_PASS}
       EMAIL_NAME: ${EMAIL_NAME}
       NOTIFY_EMAIL: ${NOTIFY_EMAIL}
+      REGISTRATION: 1
     ports:
       - "3000:3000"
     depends_on:
@@ -22,12 +23,12 @@ services:
     networks:
       - deltrack-backend
   mongo:
-      image: mongo:5.0.4
+      image: mongo:6
       container_name: DelTrack-Mongo
       restart: unless-stopped
       environment:
-        MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-        MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+        MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+        MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
       networks:
         - deltrack-backend
 
